@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FablePictor</title>
+    <script type="module" src="index.js"></script>
+    <link href="bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon" />
+  </head>
+
+  <!-- [> Google tag (gtag.js) <] -->
+  <!-- <script -->
+  <!--   async -->
+  <!--   src="https://www.googletagmanager.com/gtag/js?id=G-Z70QVH55EJ" -->
+  <!-- ></script> -->
+  <!-- <script> -->
+  <!--   window.dataLayer = window.dataLayer || []; -->
+  <!--   function gtag() { -->
+  <!--     dataLayer.push(arguments); -->
+  <!--   } -->
+  <!--   gtag("js", new Date()); -->
+  <!--  -->
+  <!--   gtag("config", "G-Z70QVH55EJ"); -->
+  <!-- </script> -->
+
+  <body>
+    <div class="card-body" id="page">
+      <h1>FablePictor</h1>
+      <h2>A IIIF discovery tool for fable animals</h2>
+      <a target="_blank" href="https://iiif.io/"
+        ><img src="iiif.png" alt="thumbnail" width="70"
+      /></a>
+      <div>Search through <span id="total"></span> images</div>
+      <section>
+        FablePictor is a fork of
+        <a href="https://github.com/TomDeneire/pictor#readme" target="_blank"
+          >Pictor</a
+        >
+      </section>
+      <p></p>
+      <div class="card">
+        <table class="table">
+          <tr>
+            <td>Search within animal collection</td>
+            <td>
+              <select id="collections">
+                <option value="all" selected>(all animals)</option>
+              </select>
+            </td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Search for a keyword</td>
+            <td><input type="text" id="search" /></td>
+            <td>e.g. <i>fontaine</i> or <i>fontaine + esope</i></td>
+          </tr>
+          <tr>
+            <td>Show all images in a category</td>
+            <td
+              class="link-primary"
+              style="cursor: pointer"
+              id="categories"
+            ></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Or choose one of these random keywords</td>
+            <td
+              class="link-primary"
+              style="cursor: pointer"
+              id="suggestions"
+            ></td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+      <div>
+        <p></p>
+        <button id="submit" onClick="submit();" class="btn-outline-secondary">
+          Submit
+        </button>
+        <p></p>
+      </div>
+      <div>
+        <table id="result" class="table-sm table-bordered"></table>
+      </div>
+    </div>
+  </body>
+</html>
