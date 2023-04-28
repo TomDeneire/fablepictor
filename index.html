@@ -26,20 +26,29 @@
 
   <body>
     <div class="card-body" id="page">
-      <h1>FablePictor</h1>
+      <h1>&#129418; FablePictor</h1>
       <h2>A IIIF discovery tool for fable animals</h2>
-      <a target="_blank" href="https://iiif.io/"
-        ><img src="iiif.png" alt="thumbnail" width="70"
-      /></a>
-      <div>Search through <span id="total"></span> images</div>
-      <section>
-        FablePictor is a fork of
-        <a href="https://github.com/TomDeneire/pictor#readme" target="_blank"
-          >Pictor</a
-        >
-      </section>
       <p></p>
-      <div class="card">
+      <div style="padding-bottom: 2%">
+        Search through <span id="total"></span> images
+        <section>
+          <small class="text-body-secondary">
+            <a href="https://github.com/TomDeneire/fablepictor" target="_blank"
+              >FablePictor</a
+            >
+            is a fork of
+            <a
+              href="https://github.com/TomDeneire/pictor#readme"
+              target="_blank"
+              >Pictor</a
+            >, a project by ⚡
+            <a href="https://tomdeneire.github.io" target="_blank"
+              >Tom Deneire Consulting</a
+            >
+          </small>
+        </section>
+      </div>
+      <div>
         <table class="table">
           <tr>
             <td>Search within animal collection</td>
@@ -53,7 +62,10 @@
           <tr>
             <td>Search for a keyword</td>
             <td><input type="text" id="search" /></td>
-            <td>e.g. <i>fontaine</i> or <i>fontaine + esope</i></td>
+            <td>
+              e.g. <i>fontaine</i> or <i>fontaine + esope</i> or
+              <i>1784</i>
+            </td>
           </tr>
           <tr>
             <td>Show all images in a category</td>
@@ -71,7 +83,11 @@
               style="cursor: pointer"
               id="suggestions"
             ></td>
-            <td></td>
+            <td>
+              <a target="_blank" href="https://iiif.io/"
+                ><img src="iiif.png" alt="thumbnail" width="70"
+              /></a>
+            </td>
           </tr>
         </table>
       </div>
