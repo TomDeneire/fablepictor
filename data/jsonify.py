@@ -129,7 +129,7 @@ def make_identifiers():
 
     with open(DB, "r") as reader:
         for line in reader:
-            identifier = line.split(" ")[0]
+            identifier = line.split(" ")[0].strip()
             if identifier in identifiers:
                 continue
             count += 1
@@ -150,8 +150,10 @@ def replace_identifiers():
 
     with open(DB, "r") as reader, open("tmp.txt", "w") as writer:
         for line in reader:
-            identifier = line.split(" ")[0]
-            writer.write(line.replace(identifier, identifiers[identifier]))
+            line = line.strip()
+            identifier = line.split(" ")[0].strip()
+            line = line.replace(identifier, identifiers[identifier])
+            writer.write(line+"\n")
     shutil.copy(DB, "original_db.txt")
     os.remove(DB)
     os.rename("tmp.txt", DB)
@@ -164,15 +166,19 @@ def make_index():
     index = {}
     with open(DB, "r") as reader:
         for line in reader:
-            if "tdn:W" not in line:
-                continue
-            identifier = line.partition("tdn:W")[0].strip()
-            word = line.partition("tdn:W")[2].strip()
-            if word == "":
-                continue
-            if word not in index:
-                index[word] = []
-            index[word].append(identifier)
+            for label in ["W", "D"]:
+                label = "tdn:" + label
+                if label not in line:
+                    continue
+                identifier = line.partition(label)[0].strip()
+                index_term = line.partition(label)[2].strip()
+                # conversion to string to get strings in JSON keys!
+                index_term = str(index_term)
+                if index_term == "":
+                    continue
+                if index_term not in index:
+                    index[index_term] = []
+                index[index_term].append(identifier)
 
     for word, values in index.items():
         index[word] = list(set(values))

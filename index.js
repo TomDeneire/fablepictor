@@ -110,9 +110,8 @@ window.submit = function () {
     // Perform normal search
     let searches = search.split("+");
     searches.forEach((term) => {
-      term = term.trim();
       let termResult = index[term];
-      if (termResult != null) {
+      if (termResult != undefined) {
         result = result.concat(termResult);
       }
     });
@@ -121,7 +120,7 @@ window.submit = function () {
       searches.forEach((term) => {
         term = term.trim();
         let termResult = index[term];
-        if (termResult != null) {
+        if (termResult != undefined) {
           result = result.filter((x) => termResult.includes(x));
         } else {
           result = [];
@@ -161,7 +160,7 @@ window.submit = function () {
         title += "<br>" + impressum;
       }
       let fable = metadata[hash]["F"];
-      if (fable != null) {
+      if (fable != undefined) {
         title += `<br>"${fable}"`;
       }
       let desc =
