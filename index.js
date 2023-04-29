@@ -1,23 +1,35 @@
-// Constants
+// Help functions
 
-const Universal = "https://uv-v4.netlify.app/#?c=&m=&s=&cv=&manifest=";
-const Mirador = "https://projectmirador.org/embed/?iiif-content=";
-const Clover = "https://samvera-labs.github.io/clover-iiif/?iiif-content=";
+function onlyUnique(value, index, self) {
+  return self.indexOf(value) === index;
+}
 
-// Load databases
+function onlySelected(value, index, self) {
+  return self.indexOf(value) === index;
+}
 
-var page = document.getElementById("page").innerHTML;
+function getSelectedText(elementId) {
+  var elt = document.getElementById(elementId);
+
+  if (elt.selectedIndex == -1) return null;
+
+  return elt.options[elt.selectedIndex].text;
+}
+
+// Load data
+
+const page = document.getElementById("page").innerHTML;
 document.getElementById("page").innerHTML = "Loading...";
 
-var resid = await fetch(
+const resid = await fetch(
   "https://tomdeneire.github.io/fablepictor/identifiers.json"
 );
 const identifiers = await resid.json();
-var resmeta = await fetch(
+const resmeta = await fetch(
   "https://tomdeneire.github.io/fablepictor/metadata.json"
 );
 const metadata = await resmeta.json();
-var resindex = await fetch(
+const resindex = await fetch(
   "https://tomdeneire.github.io/fablepictor/index.json"
 );
 const index = await resindex.json();
@@ -25,18 +37,8 @@ const index = await resindex.json();
 document.getElementById("page").innerHTML = page;
 document.getElementById("total").innerHTML = Object.keys(identifiers).length;
 
-// Extract random suggestions
-
-var suggestions = "";
-const indexKeys = Object.keys(index);
-const numberOfKeywords = indexKeys.length;
-for (let i = 0; i < 20; i++) {
-  let random = Math.floor(Math.random() * numberOfKeywords);
-  let keyword = indexKeys[random];
-  let a = `<a onclick="document.getElementById('search').value = '${keyword}'; submit()">${keyword}</a> `;
-  suggestions = suggestions + a;
-}
-document.getElementById("suggestions").innerHTML = suggestions;
+// Set focus
+document.getElementById("search").focus();
 
 // Enable enter
 
@@ -50,55 +52,46 @@ input.addEventListener("keypress", function (event) {
   }
 });
 
-// Animals
+// Show random suggestions
 
-let animals = new Set();
+const indexKeys = Object.keys(index);
+const numberOfKeywords = indexKeys.length;
+for (let i = 0; i < 20; i++) {
+  const random = Math.floor(Math.random() * numberOfKeywords);
+  const keyword = indexKeys[random];
+  const suggestion = `<a onclick="document.getElementById('search').value = '${keyword}'; submit()">${keyword}</a> `;
+  document.getElementById("suggestions").innerHTML += suggestion;
+}
+
+// Animal collections
+
+const animals = new Set();
 Object.values(metadata).forEach((data) => {
   if (data["A"] != null) {
     animals.add(`${data["A"]}`);
   }
 });
-let cols_sorted = Array.from(animals);
+const cols_sorted = Array.from(animals);
 cols_sorted.sort();
 
-var select_box = document.getElementById("collections");
+const collectionsSelect = document.getElementById("collections");
 for (var i = 0; i < cols_sorted.length; i++) {
-  var option = document.createElement("option");
+  const option = document.createElement("option");
   option.innerHTML = cols_sorted[i];
   option.value = cols_sorted[i];
-  select_box.appendChild(option);
+  collectionsSelect.appendChild(option);
 }
 
-let categories = "";
 cols_sorted.forEach((category) => {
-  let a = `<a onclick="document.getElementById('search').value = 'category:${category}'; submit()">${category}</a> `;
-  categories = categories + a;
+  const categoryLink = `<a onclick="document.getElementById('search').value = 'category:${category}'; submit()">${category}</a> `;
+  document.getElementById("categories").innerHTML += categoryLink;
 });
-document.getElementById("categories").innerHTML = categories;
 
-// Help functions
-
-function onlyUnique(value, index, self) {
-  return self.indexOf(value) === index;
-}
-
-function onlySelected(value, index, self) {
-  return self.indexOf(value) === index;
-}
-
-// Submit function
-
-window.submit = function () {
-  document.getElementById("result").innerHTML = "";
-  // Validate search input
-  let search = document.getElementById("search").value;
-  search = search.toLowerCase();
-  if (search == "") {
-    return;
-  }
+// Search function
+function Search(search) {
   let result = [];
   if (search.startsWith("category:")) {
-    // Perform categories search
+    // Categories search
     let searches = search.split("category:");
     let animal = searches[1];
     Object.keys(metadata).forEach((hash) => {
@@ -107,7 +100,7 @@ window.submit = function () {
       }
     });
   } else {
-    // Perform normal search
+    // Normal search
     let searches = search.split("+");
     searches.forEach((term) => {
       let termResult = index[term];
@@ -129,65 +122,104 @@ window.submit = function () {
       result = result.filter(onlyUnique);
     }
   }
+
   // Filter by animal
-  let animal = document.getElementById("collections").value;
+  const animal = document.getElementById("collections").value;
   if (animal != "all") {
     result = result.filter((hash) => metadata[hash]["A"] == animal);
   }
-  // Fill result template
+  return result;
+}
+
+// Show result function
+
+function ShowResult(result) {
   let html = "<table>";
-  if (result != null) {
-    let size = Object.keys(result).length;
-    html = `${html}<tr><td></td><td>${size} results</td></tr>`;
-    result.forEach((hash) => {
-      let img = identifiers[hash];
-      if (img.endsWith("/full/0/default.jpg")) {
-        img = img.replaceAll("/full/0/default.jpg", "/150,/0/default.jpg");
-      }
-      let a = `<a target="_blank" href="${img}">
-            <img src="${img}" alt="thumbnail" width="150"></a>`;
-      let manifest = metadata[hash]["M"];
-      let permalink = metadata[hash]["P"];
-      let title = metadata[hash]["S"];
-      let impressum = "";
-      if (metadata[hash]["L"] != "") {
-        impressum = impressum + metadata[hash]["L"];
-      }
-      if (metadata[hash]["D"] != "") {
-        impressum = impressum + " " + metadata[hash]["D"];
-      }
-      if (impressum != "") {
-        title += "<br>" + impressum;
-      }
-      let fable = metadata[hash]["F"];
-      if (fable != undefined) {
-        title += `<br>"${fable}"`;
-      }
-      let desc =
-        title +
-        "<p>" +
-        `<a target="_blank" href="${permalink}">${permalink}</a>` +
-        "<p>" +
-        `<a target="_blank" href="${manifest}">${manifest}</a>`;
-      let viewers = `<p><a target="_blank" href="${
-        Universal + manifest
-      }">View with Universal</a>
-            <br><a target="_blank" href="${
-              Mirador + manifest
-            }">View with Mirador</a>
-            <br><a target="_blank" href="${
-              Clover + manifest
-            }">View with Clover</a>`;
-      html = `${html}<tr><td>${a}</td><td>${desc + viewers}</td></tr>`;
-    });
-  } else {
-    html = `${html}<tr><td></td><td>0 results</td></tr>`;
+  let size = Object.keys(result).length;
+  html = `${html}<tr><td></td><td>${size} results</td></tr></table>`;
+  html += "<div>";
+  let count = 0;
+  result.forEach((hash) => {
+    count += 1;
+    // Build data elements
+    let img = identifiers[hash];
+    if (img.endsWith("/full/0/default.jpg")) {
+      img = img.replaceAll("/full/0/default.jpg", "/300,/0/default.jpg");
+    }
+    const thumbnail = `<a target="_blank" href="${img}">
+            <img src="${img}" alt="thumbnail" width="300"></a>`;
+    const manifest = metadata[hash]["M"];
+    const permalink = metadata[hash]["P"];
+    const short = metadata[hash]["S"];
+    let title = metadata[hash]["S"];
+    let impressum = "";
+    if (metadata[hash]["L"] != "") {
+      impressum = impressum + metadata[hash]["L"];
+    }
+    if (metadata[hash]["D"] != "") {
+      impressum = impressum + ", " + metadata[hash]["D"];
+    }
+    if (impressum != "") {
+      title += "<br>" + impressum;
+    }
+    let fable = metadata[hash]["F"];
+    if (fable != undefined) {
+      title += `<br>"${fable}"`;
+    }
+    const description =
+      title +
+      "<p>" +
+      `<a target="_blank" href="${permalink}">${permalink}</a>` +
+      "<p>" +
+      `<a target="_blank" href="${manifest}">${manifest}</a>`;
+    const viewer = document.getElementById("viewer").value;
+    const viewerName = getSelectedText("viewer");
+    const viewerLink = `
+        <p><a target="_blank" href="${
+          viewer + manifest
+        }">View with ${viewerName}</a>
+            <br>`;
+    // Fill template
+    if (count % 2 != 0) {
+      html += `<div class="row">
+<div class="col-sm-6 mb-3 mb-sm-0">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">${short}</h5>
+        <p class="card-text">${thumbnail}</p>
+        <p class="card-text">${description}${viewerLink}</p>
+      </div>
+    </div>`;
+    } else {
+      html += `<div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">${short}</h5>
+        <p class="card-text">${thumbnail}</p>
+        <p class="card-text">${description}${viewerLink}</p>
+      </div>
+    </div>
+  </div>
+</div>`;
+    }
+    html += "</div>";
+    document.getElementById("result").innerHTML = html;
+  });
+}
+
+// Submit function
+
+window.submit = function () {
+  document.getElementById("result").innerHTML = "";
+
+  let search = document.getElementById("search").value;
+  search = search.toLowerCase();
+  if (search == "") {
+    return;
   }
-  document.getElementById("result").innerHTML = html + "</table>";
-};
 
-// Set focus
-
-window.onload = function () {
-  document.getElementById("search").focus();
+  const result = Search(search);
+  if (result != undefined) {
+    ShowResult(result);
+  }
 };
