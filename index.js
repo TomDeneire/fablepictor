@@ -171,7 +171,7 @@ function ShowResult(result) {
       "<p>" +
       `<a target="_blank" href="${permalink}">${permalink}</a>` +
       "<p>" +
-      `<a target="_blank" href="${manifest}">${manifest}</a>`;
+      `<a target="_blank" href="jsonviewer?url=${manifest}">${manifest}</a>`;
     const viewer = document.getElementById("viewer").value;
     const viewerName = getSelectedText("viewer");
     const viewerLink = `
