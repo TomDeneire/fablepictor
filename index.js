@@ -151,7 +151,12 @@ function ShowResult(result) {
     const manifest = metadata[hash]["M"];
     const permalink = metadata[hash]["P"];
     const short = metadata[hash]["S"];
+    const creators = metadata[hash]["C"];
+    console.log(creators);
     let title = metadata[hash]["S"];
+    if (creators != undefined) {
+      title += "<br>" + creators;
+    }
     let impressum = "";
     if (metadata[hash]["L"] != "") {
       impressum = impressum + metadata[hash]["L"];

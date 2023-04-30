@@ -109,6 +109,11 @@ with open(DATA_FILE, "r") as reader:
         print(identifier, " tdn:S ", summary)
         for word in split_to_index_words(summary):
             print(identifier, " tdn:W ", word)
+        creators = []
+        for i in [12, 13, 16, 17, 25, 26, 29, 30, 33, 34]:
+            if not row[i] == "":
+                creators.append(row[i])
+        print(identifier, " tdn:C ", "; ".join(creators))
         print(identifier, " tdn:M ", manifest)
         print(identifier, " tdn:P ", permalink)
         print(identifier, " tdn:F ", fable)
