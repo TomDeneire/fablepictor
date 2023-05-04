@@ -1,5 +1,2 @@
-*db.txt
-pictor
-data/indexer/corpus/*.*
+data/indexer/*.csv
 todo.md
-waitinglist
