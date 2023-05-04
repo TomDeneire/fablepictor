@@ -79,6 +79,7 @@ with open(DATA_FILE, "r") as reader:
         manifest = row[39]  # manifest
         permalink = row[41]  # permalink
         summary = row[23]
+        page = row[24]
         labels.append(row[12])  # creators
         labels.append(row[13])  # creators
         labels.append(row[16])  # creators
@@ -121,3 +122,4 @@ with open(DATA_FILE, "r") as reader:
         print(identifier, " tdn:O ", oloi)
         print(identifier, " tdn:L ", place)
         print(identifier, " tdn:D ", date)
+        print(identifier, " tdn:X ", page)

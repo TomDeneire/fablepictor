@@ -196,7 +196,7 @@ def make_metadata():
         for line in reader:
             if "tdn:W" in line:
                 continue
-            for label in ["L", "S", "M", "A", "P", "D", "F", "C"]:
+            for label in ["L", "S", "M", "A", "P", "D", "F", "C", "X"]:
                 key = "tdn:" + label
                 if key in line:
                     identifier = line.partition(key)[0].strip()

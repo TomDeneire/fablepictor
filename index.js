@@ -21,18 +21,21 @@ function getSelectedText(elementId) {
 const page = document.getElementById("page").innerHTML;
 document.getElementById("page").innerHTML = "Loading...";
 
-const resid = await fetch(
+const idResponse = await fetch(
+  // "identifiers.json"
   "https://tomdeneire.github.io/fablepictor/identifiers.json"
 );
-const identifiers = await resid.json();
-const resmeta = await fetch(
+const identifiers = await idResponse.json();
+const metaResponse = await fetch(
+  // "metadata.json"
   "https://tomdeneire.github.io/fablepictor/metadata.json"
 );
-const metadata = await resmeta.json();
-const resindex = await fetch(
+const metadata = await metaResponse.json();
+const indexResponse = await fetch(
+  // "index.json"
   "https://tomdeneire.github.io/fablepictor/index.json"
 );
-const index = await resindex.json();
+const index = await indexResponse.json();
 
 document.getElementById("page").innerHTML = page;
 document.getElementById("total").innerHTML = Object.keys(identifiers).length;
@@ -168,8 +171,12 @@ function ShowResult(result) {
       title += "<br>" + impressum;
     }
     let fable = metadata[hash]["F"];
+    const page = metadata[hash]["X"];
     if (fable != undefined) {
       title += `<br>"${fable}"`;
+      if (page != undefined) {
+        title += `, p. ${page}`;
+      }
     }
     const description =
       title +
