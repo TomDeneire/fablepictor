@@ -67,6 +67,8 @@ with open(DATA_FILE, "r") as reader:
         if index == 0:
             continue
         identifier = row[0]
+        part = row[1]
+        part_aat = row[2]
         labels = []
         fable = row[3]
         labels.append(fable)  # title
@@ -76,6 +78,8 @@ with open(DATA_FILE, "r") as reader:
         animals["chicken"] = row[6]
         animals["snake"] = row[7]
         animals["fox"] = row[8]
+        objecttype = row[9]
+        objecttype_aat = row[10]
         manifest = row[39]  # manifest
         permalink = row[41]  # permalink
         summary = row[23]
@@ -123,3 +127,7 @@ with open(DATA_FILE, "r") as reader:
         print(identifier, " tdn:L ", place)
         print(identifier, " tdn:D ", date)
         print(identifier, " tdn:X ", page)
+        print(identifier, " tdn:Y ", part)
+        print(identifier, " tdn:y ", part_aat)
+        print(identifier, " tdn:Z ", objecttype)
+        print(identifier, " tdn:z ", objecttype_aat)

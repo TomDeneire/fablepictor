@@ -178,6 +178,12 @@ function ShowResult(result) {
         title += `, p. ${page}`;
       }
     }
+    const part = metadata[hash]["Y"];
+    const partAAT = metadata[hash]["y"];
+    const objecttype = metadata[hash]["Z"];
+    const objecttypeAAT = metadata[hash]["z"];
+    title += `<br><a target="_blank" href="https://vocab.getty.edu/aat/${partAAT}">${part}</a>`;
+    title += `, <a target="_blank" href="https://vocab.getty.edu/aat/${objecttypeAAT}">${objecttype}</a>`;
     const description =
       title +
       "<p>" +

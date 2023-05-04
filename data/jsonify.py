@@ -153,7 +153,7 @@ def replace_identifiers():
             line = line.strip()
             identifier = line.split(" ")[0].strip()
             line = line.replace(identifier, identifiers[identifier])
-            writer.write(line+"\n")
+            writer.write(line + "\n")
     shutil.copy(DB, "original_db.txt")
     os.remove(DB)
     os.rename("tmp.txt", DB)
@@ -196,7 +196,21 @@ def make_metadata():
         for line in reader:
             if "tdn:W" in line:
                 continue
-            for label in ["L", "S", "M", "A", "P", "D", "F", "C", "X"]:
+            for label in [
+                "L",
+                "S",
+                "M",
+                "A",
+                "P",
+                "D",
+                "F",
+                "C",
+                "X",
+                "Y",
+                "y",
+                "Z",
+                "z",
+            ]:
                 key = "tdn:" + label
                 if key in line:
                     identifier = line.partition(key)[0].strip()
@@ -208,6 +222,7 @@ def make_metadata():
                     metadata[identifier][key.strip("tdn:")] = data
     with open(METADATA_DB, "w") as writer:
         writer.write(json.dumps(metadata))
+
 
 # Remove identifiers from identifiers db
 # (only hashes are necessary for index.js!)
