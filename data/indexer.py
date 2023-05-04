@@ -82,6 +82,8 @@ with open(DATA_FILE, "r") as reader:
         objecttype_aat = row[10]
         manifest = row[39]  # manifest
         permalink = row[41]  # permalink
+        if permalink.endswith("/N"):
+            permalink = permalink[:-2] + "/E"
         summary = row[23]
         page = row[24]
         labels.append(row[12])  # creators
