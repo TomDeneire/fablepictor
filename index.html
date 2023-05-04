@@ -98,6 +98,14 @@
             </td>
           </tr>
           <tr>
+            <td>Limit by date range</td>
+            <td>
+              <input type="number" id="yearbegin" /> -
+              <input type="number" id="yearend" />
+            </td>
+            <td>e.g. <i>1650-1700</i> or <i>1700-</i></td>
+          </tr>
+          <tr>
             <td>Show all images in a category</td>
             <td
               class="link-primary"
@@ -150,9 +158,8 @@
         </button>
         <p></p>
       </div>
-      <div id="result">
-        <!-- <table id="result" class="table-sm table-bordered"></table> -->
-      </div>
+      <div id="searching" style="display: none">Searching...</div>
+      <div id="result"></div>
     </div>
   </body>
 </html>

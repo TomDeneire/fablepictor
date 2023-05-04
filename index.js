@@ -22,18 +22,18 @@ const page = document.getElementById("page").innerHTML;
 document.getElementById("page").innerHTML = "Loading...";
 
 const idResponse = await fetch(
-  // "identifiers.json"
-  "https://tomdeneire.github.io/fablepictor/identifiers.json"
+  "identifiers.json"
+  // "https://tomdeneire.github.io/fablepictor/identifiers.json"
 );
 const identifiers = await idResponse.json();
 const metaResponse = await fetch(
-  // "metadata.json"
-  "https://tomdeneire.github.io/fablepictor/metadata.json"
+  "metadata.json"
+  // "https://tomdeneire.github.io/fablepictor/metadata.json"
 );
 const metadata = await metaResponse.json();
 const indexResponse = await fetch(
-  // "index.json"
-  "https://tomdeneire.github.io/fablepictor/index.json"
+  "index.json"
+  // "https://tomdeneire.github.io/fablepictor/index.json"
 );
 const index = await indexResponse.json();
 
@@ -46,7 +46,7 @@ document.getElementById("search").focus();
 // Enable enter
 
 var input = document.getElementById("search");
-input.addEventListener("keypress", function (event) {
+input.addEventListener("keypress", function(event) {
   // If the user presses the "Enter" key on the keyboard
   if (event.key === "Enter") {
     event.preventDefault();
@@ -92,6 +92,10 @@ cols_sorted.forEach((category) => {
 
 // Search function
 function Search(search) {
+  let yearBegin = document.getElementById("yearbegin").value;
+  let yearEnd = document.getElementById("yearend").value;
+  yearBegin = parseInt(yearBegin);
+  yearEnd = parseInt(yearEnd);
   let result = [];
   if (search.startsWith("category:")) {
     // Categories search
@@ -124,6 +128,13 @@ function Search(search) {
       });
       result = result.filter(onlyUnique);
     }
+  }
+  // Filter by daterange
+  if (!isNaN(yearBegin)) {
+    result = result.filter((x) => parseInt(metadata[x]["D"]) >= yearBegin);
+  }
+  if (!isNaN(yearEnd)) {
+    result = result.filter((x) => parseInt(metadata[x]["D"]) <= yearEnd);
   }
 
   // Filter by animal
@@ -192,9 +203,8 @@ function ShowResult(result) {
     const viewer = document.getElementById("viewer").value;
     const viewerName = getSelectedText("viewer");
     const viewerLink = `
-        <p><a target="_blank" href="${
-          viewer + manifest
-        }">View with ${viewerName}</a>
+        <p><a target="_blank" href="${viewer + manifest
+      }">View with ${viewerName}</a>
             <br>`;
     // Fill template
     if (count % 2 != 0) {
@@ -220,14 +230,14 @@ function ShowResult(result) {
 </div>`;
     }
     html += "</div>";
-    document.getElementById("result").innerHTML = html;
   });
+  document.getElementById("result").innerHTML = html;
 }
 
 // Submit function
 
-window.submit = function () {
-  document.getElementById("result").innerHTML = "";
+window.submit = function() {
+  document.getElementById("searching").style.display = "block";
 
   let search = document.getElementById("search").value;
   search = search.toLowerCase();
@@ -236,6 +246,7 @@ window.submit = function () {
   }
 
   const result = Search(search);
+  document.getElementById("searching").style.display = "none";
   if (result != undefined) {
     ShowResult(result);
   }
