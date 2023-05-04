@@ -67,42 +67,42 @@ with open(DATA_FILE, "r") as reader:
         if index == 0:
             continue
         identifier = row[0]
-        part = row[1]
-        part_aat = row[2]
+        part = row[2]
+        part_aat = row[3]
         labels = []
-        fable = row[3]
+        fable = row[4]
         labels.append(fable)  # title
         animals = {}
-        animals["monkey"] = row[4]
-        animals["donkey"] = row[5]
-        animals["chicken"] = row[6]
-        animals["snake"] = row[7]
-        animals["fox"] = row[8]
-        objecttype = row[9]
-        objecttype_aat = row[10]
-        manifest = row[39]  # manifest
-        permalink = row[41]  # permalink
+        animals["monkey"] = row[5]
+        animals["donkey"] = row[6]
+        animals["chicken"] = row[7]
+        animals["snake"] = row[8]
+        animals["fox"] = row[9]
+        objecttype = row[11]
+        objecttype_aat = row[12]
+        manifest = row[41]  # manifest
+        permalink = row[43]  # permalink
         if permalink.endswith("/N"):
             permalink = permalink[:-2] + "/E"
-        summary = row[23]
-        page = row[24]
-        labels.append(row[12])  # creators
-        labels.append(row[13])  # creators
-        labels.append(row[16])  # creators
-        labels.append(row[17])  # creators
-        cloi = row[20]  # cloi
+        summary = row[25]
+        page = row[26]
+        labels.append(row[14])  # creators
+        labels.append(row[15])  # creators
+        labels.append(row[18])  # creators
+        labels.append(row[19])  # creators
+        cloi = row[22]  # cloi
         labels.append(cloi)
-        oloi = row[22]  # oloi
+        oloi = row[24]  # oloi
         labels.append(oloi)
-        labels.append(row[25])  # creators
-        labels.append(row[26])  # creators
-        labels.append(row[29])  # creators
-        labels.append(row[30])  # creators
-        labels.append(row[33])  # creators
-        labels.append(row[34])  # creators
-        place = row[37]
+        labels.append(row[27])  # creators
+        labels.append(row[28])  # creators
+        labels.append(row[31])  # creators
+        labels.append(row[32])  # creators
+        labels.append(row[35])  # creators
+        labels.append(row[36])  # creators
+        place = row[39]
         labels.append(place)
-        date = row[38]
+        date = row[40]
         labels.append(date)
         # export data
         for animal, presence in animals.items():
@@ -117,7 +117,7 @@ with open(DATA_FILE, "r") as reader:
         for word in split_to_index_words(summary):
             print(identifier, " tdn:W ", word)
         creators = []
-        for i in [12, 13, 16, 17, 25, 26, 29, 30, 33, 34]:
+        for i in [14, 15, 18, 19, 27, 28, 31, 32, 35, 36]:
             if not row[i] == "":
                 creators.append(row[i])
         print(identifier, " tdn:C ", "; ".join(creators))
