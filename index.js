@@ -21,24 +21,16 @@ function getSelectedText(elementId) {
 const page = document.getElementById("page").innerHTML;
 document.getElementById("page").innerHTML = "Loading...";
 
-const idResponse = await fetch(
-  "identifiers.json"
-  // "https://tomdeneire.github.io/fablepictor/identifiers.json"
-);
+const idResponse = await fetch("identifiers.json");
 const identifiers = await idResponse.json();
-const metaResponse = await fetch(
-  "metadata.json"
-  // "https://tomdeneire.github.io/fablepictor/metadata.json"
-);
+const metaResponse = await fetch("metadata.json");
 const metadata = await metaResponse.json();
-const indexResponse = await fetch(
-  "index.json"
-  // "https://tomdeneire.github.io/fablepictor/index.json"
-);
+const indexResponse = await fetch("index.json");
 const index = await indexResponse.json();
 
 document.getElementById("page").innerHTML = page;
-document.getElementById("total").innerHTML = Object.keys(identifiers).length;
+const hashes = Object.keys(identifiers);
+document.getElementById("total").innerHTML = hashes.length;
 
 // Set focus
 document.getElementById("search").focus();
@@ -46,7 +38,7 @@ document.getElementById("search").focus();
 // Enable enter
 
 var input = document.getElementById("search");
-input.addEventListener("keypress", function(event) {
+input.addEventListener("keypress", function (event) {
   // If the user presses the "Enter" key on the keyboard
   if (event.key === "Enter") {
     event.preventDefault();
@@ -130,11 +122,28 @@ function Search(search) {
     }
   }
   // Filter by daterange
+  const filterDate = function (x, datetype) {
+    if (metadata[x] != undefined) {
+      if (datetype === "begin") {
+        return parseInt(metadata[x]["D"]) >= yearBegin;
+      } else {
+        return parseInt(metadata[x]["D"]) <= yearEnd;
+      }
+    } else {
+      return false;
+    }
+  };
   if (!isNaN(yearBegin)) {
-    result = result.filter((x) => parseInt(metadata[x]["D"]) >= yearBegin);
+    if (search === "") {
+      result = hashes;
+    }
+    result = result.filter((x) => filterDate(x, "begin"));
   }
   if (!isNaN(yearEnd)) {
-    result = result.filter((x) => parseInt(metadata[x]["D"]) <= yearEnd);
+    if (search === "" && result.length === 0) {
+      result = hashes;
+    }
+    result = result.filter((x) => filterDate(x, "end"));
   }
 
   // Filter by animal
@@ -203,8 +212,9 @@ function ShowResult(result) {
     const viewer = document.getElementById("viewer").value;
     const viewerName = getSelectedText("viewer");
     const viewerLink = `
-        <p><a target="_blank" href="${viewer + manifest
-      }">View with ${viewerName}</a>
+        <p><a target="_blank" href="${
+          viewer + manifest
+        }">View with ${viewerName}</a>
             <br>`;
     // Fill template
     if (count % 2 != 0) {
@@ -236,18 +246,13 @@ function ShowResult(result) {
 
 // Submit function
 
-window.submit = function() {
+window.submit = function () {
   document.getElementById("searching").style.display = "block";
 
   let search = document.getElementById("search").value;
   search = search.toLowerCase();
-  if (search == "") {
-    return;
-  }
 
   const result = Search(search);
   document.getElementById("searching").style.display = "none";
-  if (result != undefined) {
-    ShowResult(result);
-  }
+  ShowResult(result);
 };
