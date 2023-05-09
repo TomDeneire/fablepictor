@@ -38,7 +38,7 @@ document.getElementById("search").focus();
 // Enable enter
 
 var input = document.getElementById("search");
-input.addEventListener("keypress", function (event) {
+input.addEventListener("keypress", function(event) {
   // If the user presses the "Enter" key on the keyboard
   if (event.key === "Enter") {
     event.preventDefault();
@@ -122,7 +122,7 @@ function Search(search) {
     }
   }
   // Filter by daterange
-  const filterDate = function (x, datetype) {
+  const filterDate = function(x, datetype) {
     if (metadata[x] != undefined) {
       if (datetype === "begin") {
         return parseInt(metadata[x]["D"]) >= yearBegin;
@@ -157,13 +157,11 @@ function Search(search) {
 // Show result function
 
 function ShowResult(result) {
-  let html = "<table>";
+  let html = "<div>";
   let size = Object.keys(result).length;
-  html = `${html}<tr><td></td><td>${size} results</td></tr></table>`;
+  html += `<div>${size} results</div>`;
   html += "<div>";
-  let count = 0;
-  result.forEach((hash) => {
-    count += 1;
+  result.forEach((hash, index) => {
     // Build data elements
     let img = identifiers[hash];
     if (img.endsWith("/full/0/default.jpg")) {
@@ -212,12 +210,11 @@ function ShowResult(result) {
     const viewer = document.getElementById("viewer").value;
     const viewerName = getSelectedText("viewer");
     const viewerLink = `
-        <p><a target="_blank" href="${
-          viewer + manifest
-        }">View with ${viewerName}</a>
+        <p><a target="_blank" href="${viewer + manifest
+      }">View with ${viewerName}</a>
             <br>`;
     // Fill template
-    if (count % 2 != 0) {
+    if (index % 2 === 0) {
       html += `<div class="row">
 <div class="col-sm-6 mb-3 mb-sm-0">
     <div class="card">
@@ -246,7 +243,7 @@ function ShowResult(result) {
 
 // Submit function
 
-window.submit = function () {
+window.submit = function() {
   document.getElementById("searching").style.display = "block";
 
   let search = document.getElementById("search").value;
