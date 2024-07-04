@@ -1,6 +1,6 @@
 // Source: https://stackoverflow.com/questions/37684/how-to-replace-plain-urls-with-links
 if (!String.linkify) {
-  String.prototype.linkify = function() {
+  String.prototype.linkify = function () {
     // http://, https://, ftp://
     var urlPattern =
       /\b(?:https?|ftp):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
