@@ -138,7 +138,7 @@ def make_identifiers():
             identifiers[ToAscii85(count)] = identifier
 
     with open(IDENTIFIERS_DB, 'w') as writer:
-        writer.write(json.dumps(identifiers))
+        writer.write(json.dumps(identifiers, indent=4))
 
 
 # Replace indentifier URLs with identifiers
@@ -184,7 +184,7 @@ def make_index():
         index[word] = list(set(values))
 
     with open(INDEX_DB, 'w') as writer:
-        writer.write(json.dumps(index))
+        writer.write(json.dumps(index, indent=4))
 
 
 # Make metadata JSON db
@@ -196,32 +196,19 @@ def make_metadata():
         for line in reader:
             if 'tdn:W' in line:
                 continue
-            for label in [
-                'L',
-                'S',
-                'M',
-                'A',
-                'P',
-                'D',
-                'F',
-                'C',
-                'X',
-                'Y',
-                'y',
-                'Z',
-                'z',
-            ]:
-                key = 'tdn:' + label
-                if key in line:
-                    identifier = line.partition(key)[0].strip()
-                    if identifier not in metadata:
-                        metadata[identifier] = {}
-                    data = line.partition(key)[2].strip()
-                    if data == '':
-                        continue
-                    metadata[identifier][key.strip('tdn:')] = data
+            for char in 'abcdefghijklmnopqrstuvwxyz':
+                for label in [char, char.upper()]:
+                    key = 'tdn:' + label
+                    if key in line:
+                        identifier = line.partition(key)[0].strip()
+                        if identifier not in metadata:
+                            metadata[identifier] = {}
+                        data = line.partition(key)[2].strip()
+                        if data == '':
+                            continue
+                        metadata[identifier][key.strip('tdn:')] = data
     with open(METADATA_DB, 'w') as writer:
-        writer.write(json.dumps(metadata))
+        writer.write(json.dumps(metadata, indent=4))
 
 
 # Remove identifiers from identifiers db
@@ -236,7 +223,7 @@ def remove_identifiers():
             if item.startswith('http') and '://' in item:
                 del new_identifiers[item]
     with open(IDENTIFIERS_DB, 'w') as writer:
-        writer.write(json.dumps(new_identifiers))
+        writer.write(json.dumps(new_identifiers, indent=4))
 
 
 if __name__ == '__main__':

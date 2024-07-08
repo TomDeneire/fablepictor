@@ -1,4 +1,4 @@
-import csv
+from anet.core.base import yieldcsv
 
 DATA_FILE = 'data.csv'
 
@@ -48,88 +48,118 @@ PUNCTUATION = {
     '9',
 }
 
+ANIMAL_TABLE = {
+    'aap': 'monkey',
+    'ezel': 'donkey',
+    'kip': 'chicken',
+    'slang': 'snake',
+    'vos': 'fox',
+}
+
 
 def split_to_index_words(data: str) -> list:
-    result = []
+    if not data:
+        return []
+    result: list[str] = []
     for word in data.split(' '):
-        word = word.strip()
-        word = word.lower()
+        word = word.strip().lower()
         for char in PUNCTUATION:
             word = word.replace(char, '', -1)
-        if not word == '' and len(word) > 1:
+        if len(word) > 1:
             result.append(word)
     return result
 
 
-with open(DATA_FILE, 'r') as reader:
-    csv_reader = csv.reader(reader)
-    for index, row in enumerate(csv_reader):
-        if index == 0:
-            continue
-        identifier = row[0]
-        part = row[2]
-        part_aat = row[3]
-        labels = []
-        fable = row[4]
-        labels.append(fable)  # title
-        animals = {}
-        animals['monkey'] = row[5]
-        animals['donkey'] = row[6]
-        animals['chicken'] = row[7]
-        animals['snake'] = row[8]
-        animals['fox'] = row[9]
-        objecttype = row[11]
-        objecttype_aat = row[12]
-        manifest = row[41]  # manifest
-        permalink = row[43]  # permalink
-        if permalink.endswith('/N'):
-            permalink = permalink[:-2] + '/E'
-        summary = row[25]
-        page = row[26]
-        labels.append(row[14])  # creators
-        labels.append(row[15])  # creators
-        labels.append(row[18])  # creators
-        labels.append(row[19])  # creators
-        cloi = row[22]  # cloi
-        labels.append(cloi)
-        oloi = row[24]  # oloi
-        labels.append(oloi)
-        labels.append(row[27])  # creators
-        labels.append(row[28])  # creators
-        labels.append(row[31])  # creators
-        labels.append(row[32])  # creators
-        labels.append(row[35])  # creators
-        labels.append(row[36])  # creators
-        place = row[39]
+for row in yieldcsv(DATA_FILE, delimiter=';'):
+
+    # Gather data
+    identifier = row['IIIF_Prent']
+    if identifier in ['', ' ']:
+        continue
+
+    labels = []
+
+    part = row['Onderdeel_EN']
+    part_aat = row['Onderdeel_AAT']
+    fable = row['Titel_Fabel']
+    cloi = row['c:loi']
+    oloi = row['o:loi']
+    objecttype = row['Objecttype_EN']
+    objecttype_aat = row['Objecttype_AAT']
+    manifest = row['Manifest']
+    summary = row['Korte_titel']
+    page = row['Pagina']
+
+    labels.append(summary)
+    labels.append(fable)
+
+    place1 = ''
+    date1 = ''
+    for number in [1, 2]:
+        place = row[f'Impr{number}_Plaats']
+        if number == 1:
+            place1 = place
         labels.append(place)
-        date = row[40]
+        date = row[f'Impr{number}_Jaar']
+        if number == 1:
+            date1 = date
         labels.append(date)
-        # export data
-        for animal, presence in animals.items():
-            if not presence == '':
-                print(identifier, ' tdn:A ', animal)
-                print(identifier, ' tdn:W ', animal)
-        for label in labels:
-            if not label == '':
-                for word in split_to_index_words(label):
-                    print(identifier, ' tdn:W ', word)
-        print(identifier, ' tdn:S ', summary)
-        for word in split_to_index_words(summary):
+
+    impressums = []
+    for number in [1, 2]:
+        impressum = row[f'Impr{number}_Presentatieweergave']
+        if impressum:
+            impressums.append(impressum)
+
+    animals = []
+    for animal in row['Dieren'].split(','):
+        animal = animal.lower().strip()
+        animal_code = ANIMAL_TABLE.get(animal)
+        labels.append(animal)
+        if animal_code:
+            animals.append(animal_code)
+            labels.append(animal_code)
+
+    permalink = row['PermalinkAnet_Titel']
+    if permalink.endswith('/N'):
+        permalink = permalink[:-2] + '/E'
+
+    authors_presentation, artists_presentation = ([], [])
+    for key in row.keys():
+        if key.startswith('Kunstenaar') or key.startswith('Auteur'):
+            data = row[key].strip()
+            if data:
+                labels.append(data)
+                if 'Presentatieweergave' in key:
+                    if key.startswith('Kunstenaar'):
+                        artists_presentation.append(data)
+                    else:
+                        authors_presentation.append(data)
+
+    # Export data
+    for animal in animals:
+        print(identifier, ' tdn:A ', animal)
+    for label in labels:
+        for word in split_to_index_words(label):
             print(identifier, ' tdn:W ', word)
-        creators = []
-        for i in [14, 15, 18, 19, 27, 28, 31, 32, 35, 36]:
-            if not row[i] == '':
-                creators.append(row[i])
-        print(identifier, ' tdn:C ', '; '.join(creators))
-        print(identifier, ' tdn:M ', manifest)
-        print(identifier, ' tdn:P ', permalink)
-        print(identifier, ' tdn:F ', fable)
-        print(identifier, ' tdn:I ', cloi)
-        print(identifier, ' tdn:O ', oloi)
-        print(identifier, ' tdn:L ', place)
-        print(identifier, ' tdn:D ', date)
-        print(identifier, ' tdn:X ', page)
-        print(identifier, ' tdn:Y ', part)
-        print(identifier, ' tdn:y ', part_aat)
-        print(identifier, ' tdn:Z ', objecttype)
-        print(identifier, ' tdn:z ', objecttype_aat)
+    export = {
+        ' tdn:k ': ', '.join(artists_presentation),
+        ' tdn:a ': ', '.join(authors_presentation),
+        ' tdn:i ': ', '.join(impressums),
+        ' tdn:S ': summary,
+        ' tdn:M ': manifest,
+        ' tdn:P ': permalink,
+        ' tdn:F ': fable,
+        ' tdn:C ': cloi,
+        ' tdn:O ': oloi,
+        ' tdn:L ': place1,
+        ' tdn:D ': date1,
+        ' tdn:X ': page,
+        ' tdn:Y ': part,
+        ' tdn:y ': part_aat,
+        ' tdn:Z ': objecttype,
+        ' tdn:z ': objecttype_aat,
+    }
+    for predicate, data_object in export.items():
+        if data_object:
+            print(identifier, predicate, data_object)
