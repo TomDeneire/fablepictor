@@ -1,4 +1,4 @@
-// Help functions
+// Helper functions
 
 function onlyUnique(value, index, self) {
   return self.indexOf(value) === index;
@@ -38,7 +38,7 @@ document.getElementById("search").focus();
 // Enable enter
 
 var input = document.getElementById("search");
-input.addEventListener("keypress", function(event) {
+input.addEventListener("keypress", function (event) {
   // If the user presses the "Enter" key on the keyboard
   if (event.key === "Enter") {
     event.preventDefault();
@@ -122,7 +122,7 @@ function Search(search) {
     }
   }
   // Filter by daterange
-  const filterDate = function(x, datetype) {
+  const filterDate = function (x, datetype) {
     if (metadata[x] != undefined) {
       if (datetype === "begin") {
         return parseInt(metadata[x]["D"]) >= yearBegin;
@@ -157,69 +157,72 @@ function Search(search) {
 // Show result function
 
 function ShowResult(result) {
-  let html = "<div>";
-  let size = Object.keys(result).length;
-  html += `<div>${size} results</div>`;
-  html += "<div>";
+  let html = `<div><div>${Object.keys(result).length} results</div><div>`;
+
   result.forEach((hash, index) => {
     // Build data elements
+
+    const manifest = metadata[hash]["M"];
+    const permalink = metadata[hash]["P"];
+    const fable = metadata[hash]["F"];
+    const authors = metadata[hash]["a"];
+    const artists = metadata[hash]["k"];
+    const summary = metadata[hash]["S"];
+    const impressum = metadata[hash]["i"];
+    const part = metadata[hash]["Y"];
+    const partAAT = metadata[hash]["y"];
+    const objecttype = metadata[hash]["Z"];
+    const objecttypeAAT = metadata[hash]["z"];
+
     let img = identifiers[hash];
     if (img.endsWith("/full/0/default.jpg")) {
       img = img.replaceAll("/full/0/default.jpg", "/300,/0/default.jpg");
     }
     const thumbnail = `<a target="_blank" href="${img}">
             <img src="${img}" alt="thumbnail" width="300"></a>`;
-    const manifest = metadata[hash]["M"];
-    const permalink = metadata[hash]["P"];
-    const short = metadata[hash]["S"];
-    const creators = metadata[hash]["C"];
-    let title = metadata[hash]["S"];
-    if (creators != undefined) {
-      title += "<br>" + creators;
+
+    let short_description = "";
+    if (authors != undefined) {
+      short_description += authors;
     }
-    let impressum = "";
-    if (metadata[hash]["L"] != "") {
-      impressum = impressum + metadata[hash]["L"];
+    if (summary != undefined) {
+      short_description += "<br>" + summary;
     }
-    if (metadata[hash]["D"] != "") {
-      impressum = impressum + ", " + metadata[hash]["D"];
+    if (impressum != undefined) {
+      short_description += "<br>" + impressum + ".";
     }
-    if (impressum != "") {
-      title += "<br>" + impressum;
-    }
-    let fable = metadata[hash]["F"];
     const page = metadata[hash]["X"];
-    if (fable != undefined) {
-      title += `<br>"${fable}"`;
-      if (page != undefined) {
-        title += `, p. ${page}`;
-      }
+    if (page != undefined) {
+      short_description += `<br>P. ${page}`;
     }
-    const part = metadata[hash]["Y"];
-    const partAAT = metadata[hash]["y"];
-    const objecttype = metadata[hash]["Z"];
-    const objecttypeAAT = metadata[hash]["z"];
-    title += `<br><a target="_blank" href="https://vocab.getty.edu/aat/${partAAT}">${part}</a>`;
-    title += `, <a target="_blank" href="https://vocab.getty.edu/aat/${objecttypeAAT}">${objecttype}</a>`;
+    if (artists != undefined) {
+      short_description += "<p>" + artists;
+    }
+
+    let links = "";
+    links += `<p><a target="_blank" href="https://vocab.getty.edu/aat/${partAAT}">${part}</a>`;
+    links += `, <a target="_blank" href="https://vocab.getty.edu/aat/${objecttypeAAT}">${objecttype}</a>`;
+
     const description =
-      title +
+      short_description +
+      links +
       "<p>" +
-      `<a target="_blank" href="${permalink}">${permalink}</a>` +
+      `<a target="_blank" href="${permalink}">Title in UAntwerp library catalogue</a>` +
       "<p>" +
-      `<a target="_blank" href="jsonviewer?url=${manifest}">${manifest}</a>`;
-    const viewer = document.getElementById("viewer").value;
-    const viewerName = getSelectedText("viewer");
+      `<a target="_blank" href="jsonviewer?url=${manifest}">IIIF Manifest</a>`;
     const viewerLink = `
-        <p><a target="_blank" href="${viewer + manifest
-      }">View with ${viewerName}</a>
+        <p><a target="_blank" href="${
+          document.getElementById("viewer").value + manifest
+        }">View with ${getSelectedText("viewer")}</a>
             <br>`;
+
     // Fill template
     if (index % 2 === 0) {
       html += `<div class="row">
 <div class="col-sm-6 mb-3 mb-sm-0">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">${short}</h5>
+        <h5 class="card-title">${fable}</h5>
         <p class="card-text">${thumbnail}</p>
         <p class="card-text">${description}${viewerLink}</p>
       </div>
@@ -228,7 +231,7 @@ function ShowResult(result) {
       html += `<div class="col-sm-6">
     <div class="card">
       <div class="card-body">
-        <h5 class="card-title">${short}</h5>
+        <h5 class="card-title">${fable}</h5>
         <p class="card-text">${thumbnail}</p>
         <p class="card-text">${description}${viewerLink}</p>
       </div>
@@ -243,7 +246,7 @@ function ShowResult(result) {
 
 // Submit function
 
-window.submit = function() {
+window.submit = function () {
   document.getElementById("searching").style.display = "block";
 
   let search = document.getElementById("search").value;
