@@ -1,6 +1,6 @@
 # 🦊 FablePictor
 
-[https://tomdeneire.github.io/fablepictor/](https://tomdeneire.github.io/fablepictor/)
+[https://anet-be.github.io/fablepictor/](https://anet-be.github.io/fablepictor/)
 
 FablePictor is based on data containing illustrations of monkeys, chickens, snakes, donkeys and foxes, found in a specific set of fable books. The books are part of the [collection Gielen](https://anet.be/query/uantwerpen/opacua/ua-gielenw-od), kept in the [Special Collections](https://www.uantwerpen.be/nl/projecten/archief-en-erfgoed/preciosa/) of the University Library of Antwerp. FablePictor makes it possible to browse through 834 images, coming from fables from Aesop, Jean de la Fontaine and many others.
 
